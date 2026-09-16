@@ -27,8 +27,8 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Authentic Notion Dark Mode Tag Colors */
-    .notion-tag {
+    /* Label Tag Color Themes */
+    .app-tag {
       display: inline-flex;
       align-items: center;
       padding: 2px 8px;
@@ -95,11 +95,11 @@
         <button data-filter="pastDue" class="filter-chip tap-press px-2.5 py-1 rounded-lg border font-medium whitespace-nowrap bg-[#161b22] border-[#21262d] text-slate-400">Past Due</button>
         <button data-filter="completed" class="filter-chip tap-press px-2.5 py-1 rounded-lg border font-medium whitespace-nowrap bg-[#161b22] border-[#21262d] text-slate-400">Completed</button>
         <span class="w-px h-3.5 bg-[#21262d] mx-0.5 flex-shrink-0"></span>
-        <button data-filter="label:Work" class="filter-chip tap-press notion-tag tag-work whitespace-nowrap">Work</button>
-        <button data-filter="label:Personal" class="filter-chip tap-press notion-tag tag-personal whitespace-nowrap">Personal</button>
-        <button data-filter="label:Finance" class="filter-chip tap-press notion-tag tag-finance whitespace-nowrap">Finance</button>
-        <button data-filter="label:Health" class="filter-chip tap-press notion-tag tag-health whitespace-nowrap">Health</button>
-        <button data-filter="label:Learning" class="filter-chip tap-press notion-tag tag-learning whitespace-nowrap">Learning</button>
+        <button data-filter="label:Work" class="filter-chip tap-press app-tag tag-work whitespace-nowrap">Work</button>
+        <button data-filter="label:Personal" class="filter-chip tap-press app-tag tag-personal whitespace-nowrap">Personal</button>
+        <button data-filter="label:Finance" class="filter-chip tap-press app-tag tag-finance whitespace-nowrap">Finance</button>
+        <button data-filter="label:Health" class="filter-chip tap-press app-tag tag-health whitespace-nowrap">Health</button>
+        <button data-filter="label:Learning" class="filter-chip tap-press app-tag tag-learning whitespace-nowrap">Learning</button>
       </div>
 
       <!-- SORT CONTROLS -->
@@ -155,11 +155,12 @@
     </button>
   </div>
 
-  <!-- TASK MODAL (CREATE & EDIT) -->
-  <dialog id="taskDialog" class="bg-transparent backdrop:bg-black/75 p-4 max-w-md w-full m-auto rounded-2xl">
+  <!-- MINIMAL-CLICK TASK MODAL -->
+  <dialog id="taskDialog" class="bg-transparent backdrop:bg-black/75 p-3 sm:p-4 max-w-md w-full m-auto rounded-2xl">
     <div class="bg-[#161b22] border border-[#30363d] text-slate-200 rounded-2xl p-4 sm:p-5 flex flex-col gap-3.5 shadow-2xl">
+      
       <div class="flex items-center justify-between border-b border-[#21262d] pb-2.5">
-        <h3 id="modalHeading" class="font-semibold text-sm text-white flex items-center gap-1.5">
+        <h3 class="font-semibold text-sm text-white flex items-center gap-1.5">
           <i data-lucide="check-circle" class="w-4 h-4 text-cyan-400"></i>
           <span id="modalTitleText">New Task</span>
         </h3>
@@ -168,63 +169,75 @@
         </button>
       </div>
 
-      <form id="dialogTaskForm" class="flex flex-col gap-3">
-        <!-- Title Input -->
+      <form id="dialogTaskForm" class="flex flex-col gap-3.5">
+        <!-- Title Input (Autofocused) -->
         <div>
-          <label class="block text-[11px] font-medium text-slate-400 mb-1">Title</label>
           <input 
             type="text" 
             id="dialogTaskTitle" 
             required 
-            placeholder="Type task name and hit Enter..." 
+            placeholder="Task title..." 
             autocomplete="off"
-            class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
+            class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-500"
           />
         </div>
 
-        <!-- Priority & Points -->
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[11px] font-medium text-slate-400 mb-1">Priority</label>
-            <select id="dialogPriority" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500 cursor-pointer">
-              <option value="P1">P1 (High)</option>
-              <option value="P2" selected>P2 (Medium)</option>
-              <option value="P3">P3 (Low)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-[11px] font-medium text-slate-400 mb-1">Completion Points</label>
-            <input type="number" id="dialogPoints" value="10" min="0" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500" />
+        <!-- 1-Tap Priority Selector -->
+        <div>
+          <label class="block text-[11px] font-medium text-slate-400 mb-1.5">Priority</label>
+          <div class="grid grid-cols-3 gap-1.5" id="priorityPillGroup">
+            <button type="button" data-val="P1" class="priority-pill tap-press py-1.5 rounded-lg border text-xs font-semibold transition-all text-center">P1 (High)</button>
+            <button type="button" data-val="P2" class="priority-pill tap-press py-1.5 rounded-lg border text-xs font-semibold transition-all text-center">P2 (Med)</button>
+            <button type="button" data-val="P3" class="priority-pill tap-press py-1.5 rounded-lg border text-xs font-semibold transition-all text-center">P3 (Low)</button>
           </div>
         </div>
 
-        <!-- Due Date & Label -->
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="block text-[11px] font-medium text-slate-400 mb-1">Due Date</label>
-            <input type="date" id="dialogDueDate" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500 cursor-pointer" />
-          </div>
-          <div>
-            <label class="block text-[11px] font-medium text-slate-400 mb-1">Label (Notion Color)</label>
-            <select id="dialogLabel" class="w-full bg-[#0d1117] border border-[#30363d] rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-500 cursor-pointer">
-              <option value="">None</option>
-              <option value="Work">Work (Blue)</option>
-              <option value="Personal">Personal (Purple)</option>
-              <option value="Finance">Finance (Green)</option>
-              <option value="Health">Health (Red)</option>
-              <option value="Learning">Learning (Orange)</option>
-            </select>
+        <!-- 1-Tap Due Date Chips -->
+        <div>
+          <label class="block text-[11px] font-medium text-slate-400 mb-1.5">Due Date</label>
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar" id="datePillGroup">
+            <button type="button" data-date="none" class="date-pill tap-press px-2.5 py-1 rounded-lg border text-xs font-medium whitespace-nowrap">None</button>
+            <button type="button" data-date="today" class="date-pill tap-press px-2.5 py-1 rounded-lg border text-xs font-medium whitespace-nowrap">Today</button>
+            <button type="button" data-date="tomorrow" class="date-pill tap-press px-2.5 py-1 rounded-lg border text-xs font-medium whitespace-nowrap">Tomorrow</button>
+            <input type="date" id="dialogCustomDate" class="tap-press bg-[#0d1117] border border-[#21262d] text-slate-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:border-cyan-500 cursor-pointer" />
           </div>
         </div>
 
+        <!-- 1-Tap Label Selector with Matching Colors -->
+        <div>
+          <label class="block text-[11px] font-medium text-slate-400 mb-1.5">Label</label>
+          <div class="flex flex-wrap gap-1.5" id="labelPillGroup">
+            <button type="button" data-label="" class="label-pill tap-press px-2.5 py-1 rounded-md border text-xs font-medium">None</button>
+            <button type="button" data-label="Work" class="label-pill tap-press px-2.5 py-1 rounded-md border text-xs font-medium tag-work">Work</button>
+            <button type="button" data-label="Personal" class="label-pill tap-press px-2.5 py-1 rounded-md border text-xs font-medium tag-personal">Personal</button>
+            <button type="button" data-label="Finance" class="label-pill tap-press px-2.5 py-1 rounded-md border text-xs font-medium tag-finance">Finance</button>
+            <button type="button" data-label="Health" class="label-pill tap-press px-2.5 py-1 rounded-md border text-xs font-medium tag-health">Health</button>
+            <button type="button" data-label="Learning" class="label-pill tap-press px-2.5 py-1 rounded-md border text-xs font-medium tag-learning">Learning</button>
+          </div>
+        </div>
+
+        <!-- 1-Tap Points Selector -->
+        <div>
+          <label class="block text-[11px] font-medium text-slate-400 mb-1.5">Completion Points</label>
+          <div class="flex items-center gap-1.5" id="pointsPillGroup">
+            <button type="button" data-pts="5" class="pts-pill tap-press flex-1 py-1 rounded-lg border text-xs font-bold text-center">5</button>
+            <button type="button" data-pts="10" class="pts-pill tap-press flex-1 py-1 rounded-lg border text-xs font-bold text-center">10</button>
+            <button type="button" data-pts="25" class="pts-pill tap-press flex-1 py-1 rounded-lg border text-xs font-bold text-center">25</button>
+            <button type="button" data-pts="50" class="pts-pill tap-press flex-1 py-1 rounded-lg border text-xs font-bold text-center">50</button>
+            <input type="number" id="dialogCustomPts" min="0" placeholder="Custom" class="w-16 bg-[#0d1117] border border-[#21262d] rounded-lg px-2 py-1 text-xs text-white text-center focus:outline-none focus:border-cyan-500" />
+          </div>
+        </div>
+
+        <!-- Footer -->
         <div class="flex items-center justify-between pt-2 border-t border-[#21262d] mt-1">
-          <span class="text-[10px] text-slate-500">Press <kbd class="px-1 py-0.5 bg-[#0d1117] border border-[#30363d] rounded text-[9px]">Enter</kbd> to save</span>
+          <span class="text-[10px] text-slate-500">Press <kbd class="px-1 py-0.5 bg-[#0d1117] border border-[#30363d] rounded text-[9px]">Enter</kbd></span>
           <div class="flex gap-2">
             <button type="button" id="cancelTaskBtn" class="tap-press px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-white rounded-lg">Cancel</button>
             <button type="submit" id="saveTaskBtn" class="tap-press px-4 py-1.5 text-xs font-semibold bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg shadow-sm">Save Task</button>
           </div>
         </div>
       </form>
+
     </div>
   </dialog>
 
@@ -236,12 +249,21 @@
   <!-- JAVASCRIPT LOGIC -->
   <script>
     (function () {
-      const NOTION_CLASSES = {
-        Work: "notion-tag tag-work",
-        Personal: "notion-tag tag-personal",
-        Finance: "notion-tag tag-finance",
-        Health: "notion-tag tag-health",
-        Learning: "notion-tag tag-learning"
+      const APP_TAG_CLASSES = {
+        Work: "app-tag tag-work",
+        Personal: "app-tag tag-personal",
+        Finance: "app-tag tag-finance",
+        Health: "app-tag tag-health",
+        Learning: "app-tag tag-learning"
+      };
+
+      const LABEL_BUTTON_THEMES = {
+        "": "bg-[#0d1117] text-slate-400 border-[#21262d]",
+        Work: "tag-work",
+        Personal: "tag-personal",
+        Finance: "tag-finance",
+        Health: "tag-health",
+        Learning: "tag-learning"
       };
 
       const state = {
@@ -252,16 +274,14 @@
         activeFilter: "inbox",
         activeSort: "priority",
         editingTaskId: null,
-        lastPriority: "P2",
-        lastPoints: 10,
-        lastLabel: "",
-        lastDueDate: ""
+        dialogPriority: "P2",
+        dialogDate: "",
+        dialogLabel: "",
+        dialogPoints: 10
       };
 
       function generateId() {
-        if (typeof crypto !== "undefined" && crypto.randomUUID) {
-          return crypto.randomUUID();
-        }
+        if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
         return "id-" + Date.now() + "-" + Math.random().toString(36).substring(2, 9);
       }
 
@@ -293,8 +313,14 @@
       }
 
       function getTodayStr() {
-        const now = new Date();
-        return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      }
+
+      function getTomorrowStr() {
+        const d = new Date();
+        d.setDate(d.getDate() + 1);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       }
 
       function isDueToday(dateStr) { return dateStr === getTodayStr(); }
@@ -336,7 +362,7 @@
             <div class="flex flex-col items-center justify-center p-8 text-center bg-[#161b22]/50 border border-dashed border-[#21262d] rounded-xl">
               <i data-lucide="check-circle-2" class="w-8 h-8 text-slate-600 mb-1.5"></i>
               <p class="text-xs text-slate-400 font-medium">No tasks found</p>
-              <p class="text-[11px] text-slate-500 mt-0.5">Click the floating + button to add one</p>
+              <p class="text-[11px] text-slate-500 mt-0.5">Click + to add a task</p>
             </div>
           `;
           refreshIcons();
@@ -364,8 +390,8 @@
             }
           }
 
-          const notionClass = NOTION_CLASSES[task.label] || "notion-tag tag-default";
-          const labelBadge = task.label ? `<span class="${notionClass}">${escapeHtml(task.label)}</span>` : "";
+          const labelClass = APP_TAG_CLASSES[task.label] || "app-tag tag-default";
+          const labelBadge = task.label ? `<span class="${labelClass}">${escapeHtml(task.label)}</span>` : "";
 
           card.innerHTML = `
             <div class="flex items-start gap-2.5 flex-1 min-w-0">
@@ -384,13 +410,9 @@
             
             <div class="flex items-center gap-1">
               <span class="text-[11px] font-bold text-amber-400/90 whitespace-nowrap mr-1">+${task.points} pts</span>
-              
-              <!-- Edit Task Button -->
               <button data-edit-task="${task.id}" class="p-1.5 text-slate-400 hover:text-cyan-400 hover:bg-[#21262d] tap-press rounded-md transition-colors" title="Edit Task">
                 <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
               </button>
-
-              <!-- Delete Task Button -->
               <button data-delete-task="${task.id}" class="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-[#21262d] tap-press rounded-md transition-colors" title="Delete Task">
                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
               </button>
@@ -402,7 +424,7 @@
         refreshIcons();
       }
 
-      // --- RENDERING REWARDS WITH PROGRESS BARS & DISABLED REDEMPTION ---
+      // --- RENDERING REWARDS ---
       function renderRewards() {
         const container = document.getElementById("rewardList");
         container.innerHTML = "";
@@ -412,7 +434,7 @@
             <div class="flex flex-col items-center justify-center p-8 text-center bg-[#161b22]/50 border border-dashed border-[#21262d] rounded-xl">
               <i data-lucide="gift" class="w-8 h-8 text-slate-600 mb-1.5"></i>
               <p class="text-xs text-slate-400 font-medium">Rewards catalog is empty</p>
-              <p class="text-[11px] text-slate-500 mt-0.5">Add an incentive above to redeem your earned points.</p>
+              <p class="text-[11px] text-slate-500 mt-0.5">Add an incentive above to redeem points.</p>
             </div>
           `;
           refreshIcons();
@@ -426,7 +448,6 @@
           const pct = Math.min(100, Math.round((state.points / cost) * 100));
 
           card.className = "p-3.5 bg-[#161b22] border border-[#21262d] rounded-xl flex flex-col gap-2.5 transition-all";
-
           card.innerHTML = `
             <div class="flex items-start justify-between gap-2.5">
               <div class="flex-1 min-w-0">
@@ -435,7 +456,6 @@
               </div>
 
               <div class="flex items-center gap-1.5">
-                <!-- Redeem Button (Disabled if unredeemable) -->
                 <button data-redeem-id="${reward.id}" ${!canAfford ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
                   canAfford 
                     ? 'tap-press bg-amber-600 hover:bg-amber-500 text-white shadow-sm cursor-pointer' 
@@ -450,7 +470,6 @@
               </div>
             </div>
 
-            <!-- Progress Bar -->
             <div class="flex flex-col gap-1 pt-0.5">
               <div class="w-full bg-[#0d1117] rounded-full h-1.5 overflow-hidden border border-[#21262d]">
                 <div class="h-full rounded-full transition-all duration-300 ${canAfford ? 'bg-amber-400' : 'bg-cyan-500/70'}" style="width: ${pct}%"></div>
@@ -470,10 +489,114 @@
       }
 
       function refreshIcons() {
-        if (typeof lucide !== "undefined" && lucide.createIcons) {
-          lucide.createIcons();
-        }
+        if (typeof lucide !== "undefined" && lucide.createIcons) lucide.createIcons();
       }
+
+      // --- 1-TAP PILL SYNC HELPERS (WITH COLORED LABEL BACKGROUNDS) ---
+      function syncPillUI() {
+        // Priority Pills
+        document.querySelectorAll(".priority-pill").forEach(btn => {
+          const val = btn.dataset.val;
+          if (val === state.dialogPriority) {
+            if (val === "P1") btn.className = "priority-pill tap-press py-1.5 rounded-lg border text-xs font-semibold text-center bg-rose-500/20 border-rose-500/60 text-rose-300";
+            else if (val === "P2") btn.className = "priority-pill tap-press py-1.5 rounded-lg border text-xs font-semibold text-center bg-amber-500/20 border-amber-500/60 text-amber-300";
+            else btn.className = "priority-pill tap-press py-1.5 rounded-lg border text-xs font-semibold text-center bg-slate-700/50 border-slate-500 text-white";
+          } else {
+            btn.className = "priority-pill tap-press py-1.5 rounded-lg border text-xs font-semibold text-center bg-[#0d1117] border-[#21262d] text-slate-400 hover:text-white";
+          }
+        });
+
+        // Date Pills
+        const customDateInput = document.getElementById("dialogCustomDate");
+        customDateInput.value = state.dialogDate || "";
+        document.querySelectorAll(".date-pill").forEach(btn => {
+          const mode = btn.dataset.date;
+          let isActive = false;
+          if (mode === "none" && !state.dialogDate) isActive = true;
+          else if (mode === "today" && state.dialogDate === getTodayStr()) isActive = true;
+          else if (mode === "tomorrow" && state.dialogDate === getTomorrowStr()) isActive = true;
+
+          if (isActive) {
+            btn.className = "date-pill tap-press px-2.5 py-1 rounded-lg border text-xs font-semibold whitespace-nowrap bg-cyan-500/20 border-cyan-500/50 text-cyan-300";
+          } else {
+            btn.className = "date-pill tap-press px-2.5 py-1 rounded-lg border text-xs font-medium whitespace-nowrap bg-[#0d1117] border-[#21262d] text-slate-400 hover:text-white";
+          }
+        });
+
+        // Label Pills: Using matching colored backgrounds + active selection ring
+        document.querySelectorAll(".label-pill").forEach(btn => {
+          const lbl = btn.dataset.label;
+          const themeClass = LABEL_BUTTON_THEMES[lbl] || "tag-default";
+          const isSelected = (lbl === state.dialogLabel);
+
+          if (isSelected) {
+            btn.className = `label-pill tap-press px-2.5 py-1 rounded-md border text-xs font-bold transition-all ${themeClass} ring-2 ring-cyan-400 ring-offset-2 ring-offset-[#161b22] opacity-100 shadow-sm`;
+          } else {
+            btn.className = `label-pill tap-press px-2.5 py-1 rounded-md border text-xs font-medium transition-all ${themeClass} opacity-60 hover:opacity-100`;
+          }
+        });
+
+        // Points Pills
+        const customPtsInput = document.getElementById("dialogCustomPts");
+        let matchedPreset = false;
+        document.querySelectorAll(".pts-pill").forEach(btn => {
+          const pts = parseInt(btn.dataset.pts, 10);
+          if (pts === state.dialogPoints) {
+            matchedPreset = true;
+            btn.className = "pts-pill tap-press flex-1 py-1 rounded-lg border text-xs font-bold text-center bg-amber-500/20 border-amber-500/60 text-amber-300";
+          } else {
+            btn.className = "pts-pill tap-press flex-1 py-1 rounded-lg border text-xs font-bold text-center bg-[#0d1117] border-[#21262d] text-slate-400 hover:text-white";
+          }
+        });
+        customPtsInput.value = matchedPreset ? "" : (state.dialogPoints || "");
+      }
+
+      // 1-Tap Click Listeners
+      document.getElementById("priorityPillGroup").addEventListener("click", (e) => {
+        const btn = e.target.closest(".priority-pill");
+        if (btn) {
+          state.dialogPriority = btn.dataset.val;
+          syncPillUI();
+        }
+      });
+
+      document.getElementById("datePillGroup").addEventListener("click", (e) => {
+        const btn = e.target.closest(".date-pill");
+        if (btn) {
+          const mode = btn.dataset.date;
+          if (mode === "none") state.dialogDate = "";
+          else if (mode === "today") state.dialogDate = getTodayStr();
+          else if (mode === "tomorrow") state.dialogDate = getTomorrowStr();
+          syncPillUI();
+        }
+      });
+
+      document.getElementById("dialogCustomDate").addEventListener("change", (e) => {
+        state.dialogDate = e.target.value || "";
+        syncPillUI();
+      });
+
+      document.getElementById("labelPillGroup").addEventListener("click", (e) => {
+        const btn = e.target.closest(".label-pill");
+        if (btn) {
+          state.dialogLabel = btn.dataset.label;
+          syncPillUI();
+        }
+      });
+
+      document.getElementById("pointsPillGroup").addEventListener("click", (e) => {
+        const btn = e.target.closest(".pts-pill");
+        if (btn) {
+          state.dialogPoints = parseInt(btn.dataset.pts, 10);
+          syncPillUI();
+        }
+      });
+
+      document.getElementById("dialogCustomPts").addEventListener("input", (e) => {
+        const val = parseInt(e.target.value, 10);
+        state.dialogPoints = isNaN(val) ? 0 : Math.max(0, val);
+        syncPillUI();
+      });
 
       // --- MODAL CONTROLS: CREATE & EDIT ---
       const taskDialog = document.getElementById("taskDialog");
@@ -483,24 +606,15 @@
         document.getElementById("modalTitleText").textContent = "New Task";
         document.getElementById("saveTaskBtn").textContent = "Save Task";
 
-        document.getElementById("dialogPriority").value = state.lastPriority || "P2";
-        document.getElementById("dialogPoints").value = state.lastPoints || 10;
-        
-        if (state.activeFilter.startsWith("label:")) {
-          document.getElementById("dialogLabel").value = state.activeFilter.replace("label:", "");
-        } else {
-          document.getElementById("dialogLabel").value = state.lastLabel || "";
-        }
-
-        if (state.activeFilter === "dueToday") {
-          document.getElementById("dialogDueDate").value = getTodayStr();
-        } else {
-          document.getElementById("dialogDueDate").value = state.lastDueDate || "";
-        }
+        state.dialogPriority = "P2";
+        state.dialogPoints = 10;
+        state.dialogDate = (state.activeFilter === "dueToday") ? getTodayStr() : "";
+        state.dialogLabel = state.activeFilter.startsWith("label:") ? state.activeFilter.replace("label:", "") : "";
 
         const titleInput = document.getElementById("dialogTaskTitle");
         titleInput.value = "";
 
+        syncPillUI();
         if (taskDialog.showModal) taskDialog.showModal();
         else taskDialog.style.display = "block";
         refreshIcons();
@@ -515,17 +629,17 @@
         document.getElementById("modalTitleText").textContent = "Edit Task";
         document.getElementById("saveTaskBtn").textContent = "Update Task";
 
-        const titleInput = document.getElementById("dialogTaskTitle");
-        titleInput.value = task.title || "";
-        document.getElementById("dialogPriority").value = task.priority || "P2";
-        document.getElementById("dialogPoints").value = task.points !== undefined ? task.points : 10;
-        document.getElementById("dialogDueDate").value = task.dueDate || "";
-        document.getElementById("dialogLabel").value = task.label || "";
+        document.getElementById("dialogTaskTitle").value = task.title || "";
+        state.dialogPriority = task.priority || "P2";
+        state.dialogPoints = task.points !== undefined ? task.points : 10;
+        state.dialogDate = task.dueDate || "";
+        state.dialogLabel = task.label || "";
 
+        syncPillUI();
         if (taskDialog.showModal) taskDialog.showModal();
         else taskDialog.style.display = "block";
         refreshIcons();
-        requestAnimationFrame(() => titleInput.focus());
+        requestAnimationFrame(() => document.getElementById("dialogTaskTitle").focus());
       }
 
       document.getElementById("fabBtn").addEventListener("click", () => {
@@ -536,22 +650,17 @@
       document.getElementById("closeTaskModalBtn").addEventListener("click", () => taskDialog.close());
       document.getElementById("cancelTaskBtn").addEventListener("click", () => taskDialog.close());
 
-      // Task Form: Create & Edit
+      // Task Form Submit
       document.getElementById("dialogTaskForm").addEventListener("submit", (e) => {
         e.preventDefault();
         const titleInput = document.getElementById("dialogTaskTitle");
         const title = titleInput.value.trim();
         if (!title) return;
 
-        const priority = document.getElementById("dialogPriority").value;
-        const points = parseInt(document.getElementById("dialogPoints").value, 10) || 0;
-        const dueDate = document.getElementById("dialogDueDate").value || null;
-        const label = document.getElementById("dialogLabel").value || null;
-
-        state.lastPriority = priority;
-        state.lastPoints = points;
-        state.lastLabel = label || "";
-        state.lastDueDate = dueDate || "";
+        const priority = state.dialogPriority;
+        const points = state.dialogPoints;
+        const dueDate = state.dialogDate || null;
+        const label = state.dialogLabel || null;
 
         if (state.editingTaskId) {
           const task = state.tasks.find(t => t.id === state.editingTaskId);
@@ -582,7 +691,7 @@
 
         saveLocal();
         renderTasks();
-        renderRewards(); // Updates progress bars when points change
+        renderRewards();
         taskDialog.close();
       });
 
@@ -594,7 +703,7 @@
         }
       });
 
-      // Task Check, Edit, Delete Delegation
+      // Task Item Delegation: Check, Edit, Delete
       document.getElementById("taskList").addEventListener("click", (e) => {
         const checkBtn = e.target.closest(".task-check");
         if (checkBtn) {
@@ -611,7 +720,7 @@
             }
             saveLocal();
             renderTasks();
-            renderRewards(); // Refresh reward bars based on new point balance
+            renderRewards();
           }
           return;
         }
@@ -640,7 +749,7 @@
         }
       });
 
-      // Rewards Create & Redeem Delegation
+      // Rewards logic
       document.getElementById("rewardForm").addEventListener("submit", (e) => {
         e.preventDefault();
         const titleInput = document.getElementById("rewardTitleInput");
