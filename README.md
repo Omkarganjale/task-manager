@@ -24,11 +24,3 @@ Zero build steps. Zero backend. 100% front-end persistence.
 - **Lucide Icons** (CDN)
 
 ---
-
-## Getting Started
-
-No installation or dependencies required:
-
-1. Clone or download this repository:
-   ```bash
-   git clone [https://github.com/](https://github.com/)<YOUR_USERNAME>/<REPO_NAME>.git
